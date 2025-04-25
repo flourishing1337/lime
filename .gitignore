@@ -1,0 +1,23 @@
+# node_modules & logs
+node_modules/
+logs/
+
+# Python-cache & venv
+__pycache__/
+*.pyc
+venv/
+
+# Mac OS & DS_Store
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
+
+# Docker & Kubernetes
+.env
+docker-compose.override.yml
+
+# Build artifacts
+dist/
+build/
