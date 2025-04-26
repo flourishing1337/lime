@@ -1,14 +1,8 @@
-// hooks.client.js
-import { supabase } from '$lib/supabaseClient';
-import { goto } from '$app/navigation';
+// frontend/src/hooks.client.js
+// Inga fler globala redirect-onMount här – vi hanterar auth per route istället.
 
-supabase.auth.onAuthStateChange((event, session) => {
-  fetch('/auth/callback', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ event, session })
-  }).then(() => {
-    if (event === 'SIGNED_IN') goto('/');
-    if (event === 'SIGNED_OUT') goto('/auth/login');
-  });
-});
+export async function handle({ event, resolve }) {
+  // Här kan du i framtiden lägga in t.ex. loggning eller supabase-listeners,
+  // men för nu bara pass-through:
+  return resolve(event);
+}
