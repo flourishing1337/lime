@@ -1,18 +1,22 @@
 // src/routes/auth/callback/+server.js
-import { authCallback } from '@supabase/auth-helpers-sveltekit';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
+import { json } from '@sveltejs/kit';
 
-/*
- *  • GET  : OAuth ?code=…
- *  • POST : onAuthStateChange från hooks.client.js
- *  • Sätter / raderar sb-access-token
- *    secure:false för localhost
- */
-const handler = authCallback({
-  supabaseUrl: SUPABASE_URL,
-  supabaseKey: SUPABASE_ANON_KEY,
-  cookieOptions: { secure: false }
-});
+export const POST = async ({ request, cookies }) => {
+  const { event, session } = await request.json();
 
-export const GET  = handler;
-export const POST = handler;
+  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+    cookies.set('sb-access-token', session.access_token, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,       // Viktigt: false på localhost
+      maxAge: 60 * 60 * 24 * 7
+    });
+  }
+
+  if (event === 'SIGNED_OUT') {
+    cookies.delete('sb-access-token', { path: '/' });
+  }
+
+  return json({ success: true });
+};

@@ -1,41 +1,54 @@
 <script>
+  import { supabase } from '$lib/supabaseClient';
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  export let data;
-  let { orders } = data;
+
+  let user = null;
+  let loading = true;
+  let orders = [];
+
+  onMount(async () => {
+    const { data } = await supabase.auth.getSession();
+    user = data.session?.user;
+
+    if (!user) {
+      // Vänta på authStateChange om session ännu inte är laddad
+      supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          user = session.user;
+          loadOrders();
+        } else {
+          goto('/auth/login');
+        }
+      });
+    } else {
+      loadOrders();
+    }
+  });
+
+  async function loadOrders() {
+    const { data: fetchedOrders } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('customer_id', user.id);
+
+    orders = fetchedOrders || [];
+    loading = false;
+  }
 </script>
 
-<svelte:head><title>Mina Ordrar</title></svelte:head>
+<h1>Mina Ordrar</h1>
 
-<main style="max-width:800px;margin:2rem auto;padding:0 1rem;">
-  <h1>Mina Ordrar</h1>
-
+{#if loading}
+  <p>Laddar ordrar...</p>
+{:else}
   {#if orders.length === 0}
-    <p>Du har inga tidigare ordrar.</p>
+    <p>Inga ordrar hittades.</p>
   {:else}
-    <ul style="list-style:none;padding:0;">
-      {#each orders as o}
-        <li
-          on:click={() => goto(`/order-confirmed/${o.id}`)}
-          style="
-            cursor:pointer;
-            padding:1rem;
-            margin:0.5rem 0;
-            border:1px solid #ddd;
-            border-radius:4px;
-            display:flex;
-            justify-content:space-between;
-          "
-        >
-          <div>
-            <strong>Order #{o.id.slice(0,8)}</strong><br/>
-            {new Date(o.order_date).toLocaleString()}
-          </div>
-          <div>
-            {o.order_items.length} artikel{ o.order_items.length>1?'er':'' } – {o.total_amount.toFixed(2)} SEK
-          </div>
-          <div><em>{o.status}</em></div>
-        </li>
+    <ul>
+      {#each orders as order}
+        <li>Order #{order.id} – Totalt: {order.total_amount} SEK</li>
       {/each}
     </ul>
   {/if}
-</main>
+{/if}
