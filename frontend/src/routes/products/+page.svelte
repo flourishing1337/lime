@@ -1,116 +1,52 @@
-<main>
-  <div class="container">
-    <header>
-      <a href="/" class="back-link">← Back to Home</a>
-      <h1>Our Products</h1>
-    </header>
-
-    <div class="products-container">
-      {#if products.length === 0}
-        <p class="no-products">No products found.</p>
-      {:else}
-        <ul class="products-list">
-          {#each products as p}
-            <li class="product-item">
-              <h2>{p.name}</h2>
-              <p class="description">{p.description}</p>
-              <div class="product-details">
-                <span class="price">{p.price} SEK</span>
-                <span class="stock">In stock: {p.stock_quantity}</span>
-              </div>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-    </div>
-  </div>
-</main>
-
-<style>
-  main {
-    min-height: 100vh;
-    background-color: #f9fafb;
-    padding: 2rem;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  header {
-    margin-bottom: 2rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    color: #4b5563;
-    text-decoration: none;
-    margin-bottom: 1rem;
-    transition: color 0.2s;
-  }
-
-  .back-link:hover {
-    color: #111827;
-  }
-
-  h1 {
-    font-size: 2rem;
-    color: #111827;
-  }
-
-  .no-products {
-    text-align: center;
-    color: #6b7280;
-    font-size: 1.1rem;
-    padding: 2rem;
-  }
-
-  .products-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .product-item {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  .product-item h2 {
-    color: #111827;
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .description {
-    color: #4b5563;
-    margin-bottom: 1rem;
-  }
-
-  .product-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
-  }
-
-  .price {
-    font-weight: 600;
-    color: #10b981;
-  }
-
-  .stock {
-    color: #6b7280;
-    font-size: 0.875rem;
-  }
-</style>
-
 <script>
+  import { addToCart } from '$lib/stores/cart';
   export let data;
-  let { products = [] } = data;
+  let { products, categories, selected } = data;
+
+  function filter() {
+    const url = new URL(location.href);
+    selected ? url.searchParams.set('category', selected) : url.searchParams.delete('category');
+    location.href = url.toString();
+  }
 </script>
+
+<svelte:head><title>Produkter</title></svelte:head>
+
+<main style="max-width:800px;margin:2rem auto;padding:0 1rem;">
+  <h1>Produkter</h1>
+
+  <!-- Filter -->
+  <div style="margin-bottom:1rem;">
+    <label for="category-filter">Kategori:</label>
+    <select id="category-filter" bind:value={selected} on:change={filter}>
+      <option value=''>Alla kategorier</option>
+      {#each categories as c}
+        <option value={c.id}>{c.name}</option>
+      {/each}
+    </select>
+  </div>
+
+  <!-- Lista -->
+  {#if products.length === 0}
+    <p>Inga produkter hittades.</p>
+  {:else}
+    <ul style="list-style:none;padding:0;">
+      {#each products as p}
+        <li style="margin:1rem 0;">
+          <a
+            href={`/products/${p.id}`}
+            style="display:flex;text-decoration:none;color:inherit;border:1px solid #ddd;border-radius:4px;overflow:hidden;"
+          >
+            <img src={p.image_url || '/placeholder.png'} alt={p.name}
+                 style="width:120px;height:120px;object-fit:cover;flex-shrink:0;" />
+            <div style="padding:1rem;flex:1;">
+              <h2 style="margin:0 0 .5rem;">{p.name}</h2>
+              <p style="margin:.5rem 0;">{p.description}</p>
+              <p style="margin:0;"><strong>Pris:</strong> {p.price.toFixed(2)} SEK</p>
+            </div>
+          </a>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+</main>
