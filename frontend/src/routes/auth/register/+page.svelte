@@ -1,6 +1,6 @@
 <script>
-  import { jwt } from '$lib/auth';
   import { goto } from '$app/navigation';
+  import toast from 'svelte-french-toast';
 
   let email = '';
   let password = '';
@@ -18,27 +18,26 @@
 
       if (!res.ok) {
         const data = await res.json();
-        error = data?.detail || 'Registreringen misslyckades.';
+        toast.error(data?.detail || 'Registreringen misslyckades.');
         return;
       }
 
       const data = await res.json();
-      jwt.set(data.access_token); // ✅ Spara token direkt
 
-      goto('/admin/notes'); // 🚀 Redirecta till admin efter lyckad registrering
+      toast.success('Registrering lyckades!');
+
+      setTimeout(() => {
+        goto('/admin/notes');
+      }, 1500);
     } catch (e) {
       console.error('Register error:', e);
-      error = 'Något gick fel vid registrering.';
+      toast.error('Något gick fel vid registrering.');
     }
   }
 </script>
 
 <main>
   <h1>Registrera dig</h1>
-
-  {#if error}
-    <p style="color: red;">{error}</p>
-  {/if}
 
   <form on:submit|preventDefault={handleRegister}>
     <div>

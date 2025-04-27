@@ -1,38 +1,55 @@
-# sv
+# Lime Frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+🚀 Frontend för Lime-plattformen – byggd med [SvelteKit](https://kit.svelte.dev/) och [Vite](https://vitejs.dev/).
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Lokalt utvecklingsläge
 
 ```bash
+# Gå till frontend-mappen
+cd frontend
+
+# Installera beroenden
+npm install
+
+# Starta utvecklingsservern
 npm run dev
+Frontend körs som standard på: http://localhost:5173
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Miljövariabler
+Skapa en .env-fil i /frontend/ med:
 
-## Building
+bash
+Copy code
+VITE_API_BASE=http://localhost:8000
+VITE_API_BASE används för att ange backend-URL.
 
-To create a production version of your app:
+Deployment
+Frontend deployas på Vercel.
 
-```bash
-npm run build
-```
+Se till att lägga till miljövariabeln VITE_API_BASE i Vercel under "Environment Variables".
 
-You can preview the production build with `npm run preview`.
+Projektstruktur
+Mapp	Beskrivning
+/src/routes	Sidor och routes
+/src/lib	Komponenter, stores och utils
+/public	Statisk publik data
+Funktioner
+✅ Quest-board och admin-nyheter
+✅ Real-time admin-chatt
+✅ Global loading indicators och toasts
+✅ Idle timeout och sessionhantering
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Tech Stack
+SvelteKit
+
+Vite
+
+TailwindCSS (planerat)
+
+Svelte French Toast (toasts)
+
+Svelte NProgress (planerat för progress-bar)
+
+Byggt med ❤️ av Lime-teamet 2025.
