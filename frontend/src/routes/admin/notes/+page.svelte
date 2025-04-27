@@ -8,42 +8,68 @@
   let newMessage = '';
   let username = 'Lucas'; // 🚀 Kan kopplas till login sen
 
-  // Mock-fetch på notes och messages
   onMount(() => {
     fetchNotes();
     fetchMessages();
-    // Enkel polling var 2 sek för chat
     setInterval(fetchMessages, 2000);
   });
 
   async function fetchNotes() {
-    // TODO: Hämta från API
-    notes = [
-      { id: 1, title: '🔥 Uppgradera servern', tag: 'Quest' },
-      { id: 2, title: '✨ Nya API endpoints live', tag: 'Update' }
-    ];
+    try {
+      const res = await fetch('http://localhost:8000/admin/notes');
+      const data = await res.json();
+      notes = data;
+    } catch (error) {
+      console.error('Fel vid hämtning av notes:', error);
+    }
   }
 
   async function fetchMessages() {
-    // TODO: Hämta från API
-    messages = [
-      { id: 1, user: 'Lucas', text: 'Vi deployade precis!' },
-      { id: 2, user: 'Du', text: 'Nice, jag testar!' }
-    ];
+    try {
+      const res = await fetch('http://localhost:8000/admin/messages');
+      const data = await res.json();
+      messages = data;
+    } catch (error) {
+      console.error('Fel vid hämtning av meddelanden:', error);
+    }
   }
 
   async function sendNote() {
     if (newNote.trim() === '') return;
-    // TODO: POST till backend
-    notes.push({ id: notes.length + 1, title: newNote, tag: 'Quest' });
-    newNote = '';
+    try {
+      await fetch('http://localhost:8000/admin/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: notes.length + 1,
+          title: newNote,
+          tag: 'Quest'
+        })
+      });
+      newNote = '';
+      fetchNotes();
+    } catch (error) {
+      console.error('Fel vid post av note:', error);
+    }
   }
 
   async function sendMessage() {
     if (newMessage.trim() === '') return;
-    // TODO: POST till backend
-    messages.push({ id: messages.length + 1, user: username, text: newMessage });
-    newMessage = '';
+    try {
+      await fetch('http://localhost:8000/admin/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: messages.length + 1,
+          user: username,
+          text: newMessage
+        })
+      });
+      newMessage = '';
+      fetchMessages();
+    } catch (error) {
+      console.error('Fel vid post av meddelande:', error);
+    }
   }
 </script>
 
@@ -54,7 +80,6 @@
   </div>
 
   <div class="content">
-    <!-- Vänster: Quest Board -->
     <div class="notes">
       <h2>🧙 Quest Board</h2>
       <div class="notes-list">
@@ -72,7 +97,6 @@
       </div>
     </div>
 
-    <!-- Höger: Chat -->
     <div class="chat">
       <h2>💬 Tavern Talk</h2>
       <div class="chat-messages">
