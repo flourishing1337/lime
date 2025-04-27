@@ -59,11 +59,12 @@ export async function apiFetch(url, options = {}, { showToast = true, customMess
     }
 
     return res;
+
   } catch (error) {
     console.error('apiFetch fatal error:', error);
     clearTimeout(timeoutTimer);
     if (showToast && toastId) {
-      toast.error('Kunde inte kontakta servern.', { id: toastId });
+      toast.error(`Nätverksfel: ${error.message}`, { id: toastId });
     }
     goto('/offline');
     throw error;
