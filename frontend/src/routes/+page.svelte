@@ -7,7 +7,7 @@
 </script>
 
 <main>
-  <h1>Lime</h1>
+  <h1>🍋 Lime</h1>
   <button on:click={goToLogin}>
     Logga in
   </button>

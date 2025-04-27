@@ -20,12 +20,6 @@
   onMount(() => {
     currentUrl = $page.url.pathname;
   });
-
-  $: if ($navigating) {
-    ProgressBar.start();
-  } else {
-    ProgressBar.done();
-  }
 </script>
 
 <main>
@@ -72,7 +66,6 @@
 </main>
 
 <style>
-
   .version-footer {
     text-align: center;
     font-size: 0.8rem;

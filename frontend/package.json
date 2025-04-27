@@ -22,7 +22,6 @@
 		"@supabase/supabase-js": "^2.49.4",
 		"jsonwebtoken": "^9.0.2",
 		"jwt-decode": "^4.0.0",
-		"svelte-french-toast": "^1.2.0",
-		"svelte-nprogress": "^0.0.3"
+		"svelte-french-toast": "^1.2.0"
 	}
 }
