@@ -1,14 +1,14 @@
 <script>
+  import { jwt } from '$lib/auth';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
 
   let email = '';
   let password = '';
   let error = '';
 
-  async function handleLogin() {
+  async function handleRegister() {
     try {
-      const res = await fetch('http://localhost:8000/auth/login', {
+      const res = await fetch('/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -18,32 +18,29 @@
 
       if (!res.ok) {
         const data = await res.json();
-        error = data?.detail || 'Felaktiga inloggningsuppgifter.';
+        error = data?.detail || 'Registreringen misslyckades.';
         return;
       }
 
       const data = await res.json();
+      jwt.set(data.access_token); // ✅ Spara token direkt
 
-      // 🛑 Vi tar inte längre emot och sätter JWT på frontend
-      // Vi låter backend (eller server) hantera cookies/token
-
-      const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin/notes';
-      goto(redirectTo);
+      goto('/admin/notes'); // 🚀 Redirecta till admin efter lyckad registrering
     } catch (e) {
-      console.error('Login error:', e);
-      error = 'Något gick fel vid inloggning.';
+      console.error('Register error:', e);
+      error = 'Något gick fel vid registrering.';
     }
   }
 </script>
 
 <main>
-  <h1>Logga in</h1>
+  <h1>Registrera dig</h1>
 
   {#if error}
     <p style="color: red;">{error}</p>
   {/if}
 
-  <form on:submit|preventDefault={handleLogin}>
+  <form on:submit|preventDefault={handleRegister}>
     <div>
       <label for="email">Email</label>
       <input id="email" type="email" bind:value={email} required />
@@ -54,6 +51,6 @@
       <input id="password" type="password" bind:value={password} required />
     </div>
 
-    <button type="submit">Logga in</button>
+    <button type="submit">Registrera</button>
   </form>
 </main>

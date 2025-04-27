@@ -1,0 +1,19 @@
+# Node.js och Svelte-specifika mappar
+node_modules
+.svelte-kit
+build
+
+# Git och IDE-filer
+.git
+.gitignore
+.vscode
+*.swp
+
+# OS-filer
+.DS_Store
+Thumbs.db
+
+# Miljöfiler
+.env
+.env.local
+.env.production

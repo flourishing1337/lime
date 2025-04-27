@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   db:
@@ -6,17 +6,56 @@ services:
     restart: always
     environment:
       POSTGRES_USER: lime
-      POSTGRES_PASSWORD: limepassword
+      POSTGRES_PASSWORD: lime
       POSTGRES_DB: lime
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    build:
+      context: ./backend
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./backend:/backend
+      - ./backend:/app/backend
     ports:
       - "8000:8000"
     depends_on:
       - db
+    environment:
+      - DATABASE_URL=postgresql://lime:lime@db:5432/lime
+      - JWT_SECRET=dinsuperhemliganyckel
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - lime-network
+
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - lime-network
+
+
+volumes:
+  postgres_data:
+
+networks:
+  lime-network:
+    driver: bridge

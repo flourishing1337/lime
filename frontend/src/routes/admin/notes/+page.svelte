@@ -1,77 +1,47 @@
 <script>
-  export let data;
-  let notes = data.notes || [];
-  let title = '';
-  let content = '';
-  let error = '';
-  let loading = false;
+  import { onMount } from 'svelte';
+  import { apiFetch } from '$lib/api';
+  import { goto } from '$app/navigation';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-  async function saveNote() {
-    if (!title.trim() || !content.trim()) {
-      error = 'Både titel och text måste fyllas i';
-      return;
-    }
-    loading = true;
-    error = '';
+  let notes = [];
+  let error = '';
+  let loading = true;
+
+  onMount(async () => {
     try {
-      const res = await fetch('/admin/notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content })
-      });
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      // Hämta om listan
-      const reload = await fetch('/admin/notes');
-      const json = await reload.json();
-      notes = json.notes;
-      // Nollställ formulär
-      title = '';
-      content = '';
+      const res = await apiFetch('http://localhost:8000/admin/notes');
+
+      if (!res || !res.ok) {
+        error = 'Kunde inte hämta notes.';
+        console.error('Fel vid hämtning av notes:', res?.status);
+        return;
+      }
+
+      notes = await res.json();
     } catch (err) {
-      error = err.message;
+      console.error('Något gick fel vid apiFetch:', err);
+      error = 'Ett oväntat fel inträffade.';
     } finally {
       loading = false;
     }
-  }
+  });
 </script>
 
-<style>
-  .note-list { margin-bottom: 2rem; }
-  .note { padding: .5rem; border-bottom: 1px solid #eee; }
-  .note-title { font-weight: bold; }
-  textarea { width: 100%; height: 150px; }
-  input, textarea, button { margin-top: .5rem; display: block; }
-</style>
+<main>
+  <h1>Admin Notes</h1>
 
-<h1>Admin Notes</h1>
-
-{#if error}
-  <p style="color: red;">⚠️ {error}</p>
-{/if}
-
-<section class="note-list">
-  {#each notes as n}
-    <div class="note">
-      <div class="note-title">{n[1]}</div>
-      <div class="note-content">{n[2]}</div>
-      <div style="font-size:.8rem; color:#666;">Skapad: {new Date(n[3]).toLocaleString()}</div>
-    </div>
+  {#if loading}
+    <LoadingSpinner size={60} fullscreen={true} />
+  {:else if error}
+    <p style="color: red;">{error}</p>
+  {:else if notes.length}
+    <ul>
+      {#each notes as note}
+        <li><strong>{note.title}:</strong> {note.content}</li>
+      {/each}
+    </ul>
   {:else}
-    <p>Inga anteckningar ännu.</p>
-  {/each}
-</section>
-
-<section class="note-editor">
-  <h2>Skapa / uppdatera anteckning</h2>
-  <label>
-    Titel
-    <input type="text" bind:value={title} placeholder="Första Checklista" />
-  </label>
-  <label>
-    Innehåll
-    <textarea bind:value={content} placeholder="Skriv din anteckning här..."></textarea>
-  </label>
-  <button on:click={saveNote} disabled={loading}>
-    {#if loading}Sparar…{:else}Spara{/if}
-  </button>
-</section>
+    <p>Inga notes hittades.</p>
+  {/if}
+</main>
