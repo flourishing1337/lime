@@ -1,17 +1,17 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 export async function handle({ event, resolve }) {
   const token = event.cookies.get('auth_token');
-  console.log('[JWT-debug] Token från cookie:', token); // 1. Kolla token
+  console.log('[JWT-debug] Token från cookie:', token);
 
   if (token) {
     try {
-      const session = jwt.verify(token, JWT_SECRET);
-      console.log('[JWT-debug] Session efter verifiering:', session); // 2. Kolla sessionen
+      const session = jwt.verify(token, env.JWT_SECRET);
+      console.log('[JWT-debug] Session efter verifiering:', session);
       event.locals.user = session.user;
     } catch (e) {
-      console.error('[JWT-debug] JWT-verifieringsfel:', e.message); // 3. Få exakt JWT-fel
+      console.error('[JWT-debug] JWT-verifieringsfel:', e.message);
       event.locals.user = null;
       event.cookies.delete('auth_token', { path: '/' });
     }

@@ -1,62 +1,40 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
-    image: postgres:14
+    image: postgres:15
+    container_name: lime_db
     restart: always
     environment:
-      POSTGRES_USER: lime
-      POSTGRES_PASSWORD: lime
-      POSTGRES_DB: lime
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: limeuser
+      POSTGRES_PASSWORD: strongpassword
+      POSTGRES_DB: limedb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   backend:
     build:
       context: ./backend
-    command: ["wait-for", "db:5432", "--", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-    volumes:
-      - ./backend:/app/backend
+    container_name: lime_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgres://limeuser:strongpassword@db:5432/limedb
     ports:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://lime:lime@db:5432/lime
-      - JWT_SECRET=dinsuperhemliganyckel
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-    networks:
-      - lime-network
-
-
 
   frontend:
     build:
       context: ./frontend
+      args:
+        JWT_SECRET: "dinsuperhemliganyckel"
+    container_name: lime_frontend
+    restart: always
     ports:
-      - "80:80"
-    depends_on:
-      - backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-    networks:
-      - lime-network
-
+      - "3000:3000"
 
 volumes:
   postgres_data:
-
-networks:
-  lime-network:
-    driver: bridge

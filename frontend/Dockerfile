@@ -1,20 +1,17 @@
-# Steg 1: Build stage
-FROM node:20-slim AS builder
+FROM node:20-slim
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
+
+RUN npm install --legacy-peer-deps
 
 COPY . .
+
+ARG JWT_SECRET
+ENV JWT_SECRET=$JWT_SECRET
+
 RUN npm run build
 
-# Steg 2: Production stage
-FROM nginx:stable-alpine
-
-COPY --from=builder /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm install -g serve
+CMD ["serve", "-s", "build", "-l", "3000"]
