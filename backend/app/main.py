@@ -1,5 +1,4 @@
 import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,10 +15,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 🚀 Allow CORS for frontend calls
+# 🚀 CORS setup (allow all during dev)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all during development; restrict later in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,24 +29,17 @@ app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(checkout.router, prefix="/checkout", tags=["Checkout"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
-# 🚀 Root route to confirm server is alive
+# 🚀 Root route
 @app.get("/")
 def read_root():
-    return {
-        "message": "Backend API is alive!",
-        "version": app.version
-    }
+    return {"message": "Backend API is alive!", "version": app.version}
 
 # 🚀 Version route
 @app.get("/version")
 def get_version():
-    return {
-        "version": app.version
-    }
+    return {"version": app.version}
 
-# 🚀 Health check route (for Traefik, uptime monitors, etc.)
+# 🚀 Healthcheck route
 @app.get("/health")
 def health_check():
-    return {
-        "status": "ok"
-    }
+    return {"status": "ok"}
