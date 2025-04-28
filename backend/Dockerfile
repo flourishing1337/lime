@@ -1,5 +1,3 @@
-# backend/Dockerfile
-
 FROM python:3.11-slim
 
 # Create working directory
@@ -9,8 +7,8 @@ WORKDIR /code
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only backend app code
-COPY backend/app /code/app
+# Copy app source code
+COPY app /code/app
 
 # Expose port
 EXPOSE 8000
