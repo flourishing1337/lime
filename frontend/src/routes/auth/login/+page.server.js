@@ -1,5 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
+export const prerender = false;
+
 export function load({ cookies, url }) {
   const token = cookies.get('auth_token');
 

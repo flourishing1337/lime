@@ -1,6 +1,9 @@
 // frontend/src/routes/order-confirmed/[orderId]/+page.js
 import { supabase } from '$lib/supabaseClient';
 
+export const prerender = false;
+
+
 /** 
  * Denna load körs server‐side (SSR) och hämtar order + items i en go.
  * Om något går fel så kastas ett fel och SvelteKit visar en 500.

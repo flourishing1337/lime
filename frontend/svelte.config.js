@@ -4,7 +4,7 @@ import adapter from '@sveltejs/adapter-static';
 const config = {
 	kit: {
 		adapter: adapter({
-			fallback: 'index.html' // important for SPA routing fallback
+			fallback: 'index.html' // SPA routing fallback
 		})
 	}
 };
