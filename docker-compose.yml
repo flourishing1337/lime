@@ -1,18 +1,18 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:15
-    container_name: lime_db
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: lime_backend
     restart: always
     environment:
-      POSTGRES_USER: limeuser
-      POSTGRES_PASSWORD: strongpassword
-      POSTGRES_DB: limedb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      DATABASE_URL: postgres://limeuser:strongpassword@db:5432/limedb
     ports:
-      - "5432:5432"
+      - "8000:8000"
+    depends_on:
+      - db
 
   backend:
     build:
