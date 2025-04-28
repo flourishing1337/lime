@@ -23,7 +23,7 @@ services:
     environment:
       DATABASE_URL: postgres://limeuser:strongpassword@db:5432/limedb
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       - db
 
@@ -35,7 +35,7 @@ services:
     container_name: lime_frontend
     restart: always
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
 volumes:
   postgres_data:
