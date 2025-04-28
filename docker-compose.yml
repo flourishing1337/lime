@@ -1,6 +1,19 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:15
+    container_name: lime_db
+    restart: always
+    environment:
+      POSTGRES_USER: limeuser
+      POSTGRES_PASSWORD: strongpassword
+      POSTGRES_DB: limedb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   backend:
     build:
       context: .
@@ -14,23 +27,11 @@ services:
     depends_on:
       - db
 
-  backend:
-    build:
-      context: ./backend
-    container_name: lime_backend
-    restart: always
-    environment:
-      DATABASE_URL: postgres://limeuser:strongpassword@db:5432/limedb
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-
   frontend:
     build:
       context: ./frontend
       args:
-        JWT_SECRET: "dinsuperhemliganyckel"
+        JWT_SECRET: "your-super-secret-value"
     container_name: lime_frontend
     restart: always
     ports:
