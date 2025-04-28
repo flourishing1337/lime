@@ -29,6 +29,12 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`api.hobbyhosting.org`)"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
   frontend:
     build:
@@ -39,7 +45,8 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`hobbyhosting.org`, `www.hobbyhosting.org`)"
+      - "traefik.http.routers.frontend.rule=Host(`hobbyhosting.org`,`www.hobbyhosting.org`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
   traefik:
