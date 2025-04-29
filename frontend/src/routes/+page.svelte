@@ -2,5 +2,5 @@
   console.log("Home loaded");
 </script>
 
-<h1>Hello from Lime 👋</h1>
-<p>This is a test homepage. If you see this, routing works!</p>
+<h1>🌿 Lime is working!</h1>
+<p>Routing and server are fully functional.</p>
