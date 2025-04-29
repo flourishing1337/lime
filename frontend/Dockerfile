@@ -2,18 +2,16 @@ FROM node:20-slim
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-# build-time / run-time variables
+# build-time environment variable
 ARG VITE_API_BASE
-ARG JWT_SECRET
-ENV VITE_API_BASE=$VITE_API_BASE \
-    JWT_SECRET=$JWT_SECRET
+ENV VITE_API_BASE=$VITE_API_BASE
 
 RUN npm run build
 
 EXPOSE 3000
-CMD ["node", "build"]   # ← runs the actual SvelteKit server!
+CMD ["node", "build"]
