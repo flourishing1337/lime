@@ -1,8 +1,12 @@
-// src/routes/+layout.server.js
+export async function load({ fetch }) {
+  try {
+    // Example placeholder
+    const res = await fetch('http://api:8000/health');
+    const healthy = await res.json();
 
-/** Gör session globalt tillgänglig som data.session */
-export async function load({ locals }) {
-  return {
-    session: locals.session ?? null
-  };
+    return { healthy };
+  } catch (e) {
+    console.error('[LAYOUT load error]', e);
+    throw error(500, 'Layout load failed');
+  }
 }
