@@ -48,8 +48,7 @@ services:
         VITE_API_BASE: "http://api.hobbyhosting.org"
     container_name: lime_frontend
     restart: unless-stopped
-    networks:
-      - proxy
+    networks: [proxy]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`hobbyhosting.org`) || Host(`www.hobbyhosting.org`)"
