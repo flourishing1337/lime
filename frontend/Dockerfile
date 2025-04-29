@@ -13,11 +13,7 @@ ARG JWT_SECRET
 ENV VITE_API_BASE=$VITE_API_BASE \
     JWT_SECRET=$JWT_SECRET
 
-# Build the Svelte-Kit site
 RUN npm run build
 
-# Lightweight static server
-RUN npm install -g serve
-
 EXPOSE 3000
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["node", "build"]   # ← runs the actual SvelteKit server!
