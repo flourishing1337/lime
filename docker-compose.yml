@@ -39,6 +39,8 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_BASE: "https://api.hobbyhosting.org"
     container_name: lime_frontend
     restart: unless-stopped
     networks:
@@ -48,6 +50,7 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`hobbyhosting.org`,`www.hobbyhosting.org`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
 
   traefik:
     image: traefik:latest
