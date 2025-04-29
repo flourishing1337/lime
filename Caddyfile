@@ -1,0 +1,15 @@
+# Frontend SPA
+hobbyhosting.org, www.hobbyhosting.org {
+	tls internal            # keep if Cloudflare is proxying; remove to get LE certs
+	encode zstd gzip
+	handle /* {
+		reverse_proxy frontend:3000
+	}
+}
+
+# Backend API
+api.hobbyhosting.org {
+	tls internal
+	encode zstd gzip
+	reverse_proxy api:8000
+}
