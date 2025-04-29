@@ -20,25 +20,28 @@ services:
       dockerfile: Dockerfile
     container_name: lime_backend
     restart: unless-stopped
+    depends_on:
+      - db
     environment:
-      DATABASE_URL: postgres://limeuser:strongpassword@db:5432/limedb
+      DATABASE_URL: "postgres://limeuser:strongpassword@db:5432/limedb"
     networks:
       - internal
       - proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.hobbyhosting.org`)"
-      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+      traefik.enable: "true"
+      traefik.http.routers.api.rule: "Host(`api.hobbyhosting.org`)"
+      traefik.http.routers.api.entrypoints: "web"
+      traefik.http.services.api.loadbalancer.server.port: "8000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
       args:
         VITE_API_BASE: "https://api.hobbyhosting.org"
     container_name: lime_frontend
@@ -46,11 +49,10 @@ services:
     networks:
       - proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`hobbyhosting.org`,`www.hobbyhosting.org`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-
+      traefik.enable: "true"
+      traefik.http.routers.frontend.rule: "Host(`hobbyhosting.org`,`www.hobbyhosting.org`)"
+      traefik.http.routers.frontend.entrypoints: "web"
+      traefik.http.services.frontend.loadbalancer.server.port: "3000"
 
   traefik:
     image: traefik:latest
@@ -58,6 +60,7 @@ services:
     restart: unless-stopped
     command:
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"   # only pick up containers we label
       - "--entrypoints.web.address=:80"
       - "--api.insecure=true"
     ports:
