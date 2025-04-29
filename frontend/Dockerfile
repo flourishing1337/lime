@@ -13,7 +13,6 @@ ENV JWT_SECRET=$JWT_SECRET
 ENV VITE_API_BASE=$VITE_API_BASE
 
 RUN npm run build
-
 RUN npm install -g serve
 
-CMD ["serve", "-s", "build", "-p", "3000", "-H", "0.0.0.0"]
+CMD ["serve", "-s", "build", "-l", "3000"]
